@@ -1,0 +1,19 @@
+#Genarate File structure
+mkdir -p app/{routes,services,ai/{detector,classifier},db,utils,config,templates,static/{img,css}} \
+         models/{yolo/{full,lite},classifier/{full,lite}} \
+         data/{local/{images,roi},sync/{pending,sent,failed}} \
+         logs \
+         scripts \
+         tests
+
+touch run.py requirements.txt README.md \
+      app/__init__.py \
+      app/routes/{barcode.py,inspection.py,admin.py} \
+      app/services/{barcode_service.py,inspection_service.py,model_service.py,workflow_service.py} \
+      app/ai/{inference_pipeline.py} \
+      app/ai/detector/yolo.py \
+      app/ai/classifier/classifier.py \
+      app/db/{db.py,models.py,queries.py} \
+      app/utils/{logger.py,license.py,security.py} \
+      app/config/{app_config.yaml,model_config.yaml,workflow_config.yaml} \
+      scripts/build_exe.py

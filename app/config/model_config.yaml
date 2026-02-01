@@ -1,0 +1,4 @@
+# app/config/model_config.yaml
+active: full
+fallback: lite
+expiry: 2027-01-01

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wire Inspection System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="/static/img/logo.png" alt="Pravantia" class="logo-img">
+                <span class="logo-tagline">Industrial AI Inspection</span>
+            </div>
+            <nav class="nav-steps">
+                <div class="nav-item" id="step1-indicator">
+                    <span class="step-num">1</span>
+                    <span class="step-label">QR Scan</span>
+                </div>
+                <div class="nav-item" id="step2-indicator">
+                    <span class="step-num">2</span>
+                    <span class="step-label">Inspect</span>
+                </div>
+            </nav>
+            <div class="sidebar-brand-footer">
+                <span>Powered by PRAVANTIA AI™</span>
+            </div>
+            <div class="sidebar-footer">
+                <button id="reset-btn" class="btn-reset">↺ Reset</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: QR Entry -->
+            <section id="step1" class="step-panel active">
+                <div class="panel-header">
+                    <h2>Enter QR Code</h2>
+                    <p>Manually enter the QR code to proceed</p>
+                </div>
+                <div class="qr-entry-container">
+                    <div class="qr-input-card">
+                        <label for="qr-input">QR Code</label>
+                        <input type="text" id="qr-input" class="qr-input" autocomplete="off">
+                        <p id="qr-status" class="qr-status">Ready for Scan</p>
+                    </div>
+                    <div class="qr-button-group">
+                        <button id="cancel-btn" class="btn-secondary">Cancel</button>
+                        <button id="submit-btn" class="btn-primary" disabled>Submit</button>
+                    </div>
+                </div>
+                <!-- Blueprint Section -->
+                <div class="blueprint-container">
+                    <span class="blueprint-label">📋 Instructions</span>
+
+                    <div class="blueprint-content">
+                        <!-- Blueprint Image -->
+                        <div class="blueprint-image-wrapper">
+                            <img src="/static/img/blueprint.png" alt="Wire Assembly Instructions" class="blueprint-image" />
+
+                        </div>
+
+                        <!-- Wire Sequence -->
+                        <div class="wire-sequence">
+                            <div class="wire-sequence-title">Wire Order</div>
+                            <ul class="wire-list">
+                                <li class="wire-item black">1 - BLACK</li>
+                                <li class="wire-item red">2 - RED</li>
+                                <li class="wire-item white">3 - WHITE</li>
+                                <li class="wire-item white">4 - WHITE</li>
+                                <li class="wire-item red">5 - RED</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+            </section>
+
+            <!-- Step 2: Inspection -->
+            <section id="step2" class="step-panel">
+                <div class="inspection-layout">
+                    <!-- Main content area: Camera + Blueprint -->
+                    <div class="inspection-main">
+                        <!-- Camera Feed -->
+                        <div class="camera-section">
+                            <div class="video-card" id="display-card">
+                                <img id="display-image" src="" alt="Camera Feed">
+                            </div>
+                            <div id="status-badge-container"></div>
+                        </div>
+
+                        <!-- Blueprint Section (same as Step 1) -->
+                        <div class="blueprint-container">
+                            <span class="blueprint-label">📋 Instructions</span>
+                            <div class="blueprint-content">
+                                <div class="blueprint-image-wrapper">
+                                    <img src="/static/img/blueprint.png" alt="Wire Assembly Instructions"
+                                        class="blueprint-image" />
+                                </div>
+                                <div class="wire-sequence">
+                                    <div class="wire-sequence-title">Wire Order</div>
+                                    <ul class="wire-list">
+                                        <li class="wire-item black">1 - BLACK</li>
+                                        <li class="wire-item red">2 - RED</li>
+                                        <li class="wire-item white">3 - WHITE</li>
+                                        <li class="wire-item white">4 - WHITE</li>
+                                        <li class="wire-item red">5 - RED</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Sidebar (corner) -->
+                    <div class="results-corner">
+                        <div class="details-card">
+                            <h2 class="sidebar-title">Wire Inspection</h2>
+                            <p id="step2-subtitle" class="sidebar-subtitle">Ready for Scan</p>
+                            <h3>Inspection Details</h3>
+                            <div id="result-details">
+                                <div class="detail-placeholder">
+                                    <p>Results will appear here</p>
+                                </div>
+                            </div>
+                            <div class="button-group">
+                                <button id="inspect-btn" class="btn-primary">Inspect</button>
+                                <button id="new-product-btn" class="btn-secondary" style="display: none;">New
+                                    Product</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/main.js"></script>
+</body>
+
+</html>
