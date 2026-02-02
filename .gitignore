@@ -1,1 +1,11 @@
 models
+# Python
+__pycache__/
+*.pyc
+
+# Local runtime data
+data/
+*.db
+
+# OS junk
+.DS_Store
