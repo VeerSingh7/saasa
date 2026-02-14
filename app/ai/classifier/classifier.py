@@ -69,21 +69,28 @@ class WireClassifier:
         self.model.to(self.device)
         self.model.eval()
 
-    def classify(self, rois: list[np.ndarray]) -> list[str]:
-        """Classify a list of BGR crop ROIs.
+    def classify(self, frame: np.ndarray, detections: list[dict]) -> list[str]:
+        """Classify wire colour for each detected ROI.
 
         Parameters
         ----------
-        rois : list of numpy arrays, each a BGR cropped image.
+        frame      : BGR image (numpy array)
+        detections : list of dicts from YOLODetector.detect(),
+                     each must have a ``bbox`` key [x1, y1, x2, y2].
 
         Returns
         -------
-        list of str — predicted colour label for each ROI,
+        list of str — predicted colour label for each detection,
                       in the same order as the input.
         """
+        h, w = frame.shape[:2]
         labels = []
-        for crop in rois:
-            if crop is None or crop.size == 0:
+
+        for det in detections:
+            x1, y1, x2, y2 = det["bbox"]
+            crop = frame[max(0, y1):min(h, y2), max(0, x1):min(w, x2)]
+
+            if crop.size == 0:
                 labels.append("unknown")
                 continue
 

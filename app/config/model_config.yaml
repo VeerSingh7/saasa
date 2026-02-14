@@ -7,7 +7,7 @@ yolo:
   weights: model_yolo.pt
   conf: 0.25
   iou: 0.45
-  img_size: 640
+  img_size: 512
   device: cpu
 
 classifier:
