@@ -2,3 +2,20 @@
 active: full
 fallback: lite
 expiry: 2027-01-01
+
+yolo:
+  weights: model_yolo.pt
+  conf: 0.25
+  iou: 0.45
+  img_size: 640
+  device: cpu
+
+classifier:
+  weights: model_cls.pth
+  architecture: resnet50
+  num_classes: 3
+  class_names:
+    - black
+    - red
+    - white
+  device: cpu
