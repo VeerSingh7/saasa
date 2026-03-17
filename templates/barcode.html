@@ -4,33 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wire Inspection System</title>
+    <meta name="description" content="Pravantia AI-powered Wire Inspection System — Industrial quality assurance with real-time AI analysis">
+    <meta name="theme-color" content="#0F0A1A">
+    <title>Wire Inspection — Pravantia AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/img/logo.png" type="image/png">
 </head>
 
 <body>
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
     <div class="dashboard">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <img src="/static/img/logo.png" alt="Pravantia" class="logo-img">
-                <span class="logo-tagline">Industrial AI Inspection</span>
-            </div>
-            <nav class="nav-steps">
-                <div class="nav-item" id="step1-indicator">
-                    <span class="step-num">1</span>
-                    <span class="step-label">QR Scan</span>
+        <aside class="sidebar" aria-label="Navigation">
+            <div class="sidebar-inner">
+                <div class="logo">
+                    <div class="logo-mark">
+                        <img src="/static/img/pravantia2.png" alt="Pravantia" class="logo-img">
+                    </div>
+
                 </div>
-                <div class="nav-item" id="step2-indicator">
-                    <span class="step-num">2</span>
-                    <span class="step-label">Inspect</span>
+
+                <nav class="nav-steps" aria-label="Inspection Steps">
+                    <div class="nav-item" id="step1-indicator" role="tab" aria-selected="true">
+                        <span class="step-num">
+                            <svg class="step-check" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M2 7L5.5 10.5L12 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="step-number-text">1</span>
+                        </span>
+                        <div class="step-info">
+                            <span class="step-label">QR Scan</span>
+                            <span class="step-desc">Identify product</span>
+                        </div>
+                    </div>
+                    <div class="nav-connector">
+                        <div class="connector-line"></div>
+                    </div>
+                    <div class="nav-item" id="step2-indicator" role="tab" aria-selected="false">
+                        <span class="step-num">
+                            <svg class="step-check" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M2 7L5.5 10.5L12 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="step-number-text">2</span>
+                        </span>
+                        <div class="step-info">
+                            <span class="step-label">Inspect</span>
+                            <span class="step-desc">Analyze & verify</span>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="sidebar-status">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">System Online</span>
+                    </div>
                 </div>
-            </nav>
-            <div class="sidebar-brand-footer">
-                <span>Powered by PRAVANTIA AI™</span>
-            </div>
-            <div class="sidebar-footer">
-                <button id="reset-btn" class="btn-reset">↺ Reset</button>
+
+                <div class="sidebar-footer">
+                    <button id="reset-btn" class="btn-reset" aria-label="Reset inspection">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 8C2 4.686 4.686 2 8 2C10.21 2 12.117 3.232 13.15 5.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M14 8C14 11.314 11.314 14 8 14C5.79 14 3.883 12.768 2.85 10.94" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M10.5 5H13.5V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5.5 11H2.5V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Reset Inspection</span>
+                    </button>
+                    <div class="sidebar-brand-footer">
+                        <span>Powered by PRAVANTIA AI™</span>
+                    </div>
+                </div>
             </div>
         </aside>
 
@@ -39,46 +88,65 @@
             <!-- Step 1: QR Entry -->
             <section id="step1" class="step-panel active">
                 <div class="panel-header">
-                    <h2>Enter QR Code</h2>
-                    <p>Manually enter the QR code to proceed</p>
-                </div>
-                <div class="qr-entry-container">
-                    <div class="qr-input-card">
-                        <label for="qr-input">QR Code</label>
-                        <input type="text" id="qr-input" class="qr-input" autocomplete="off">
-                        <p id="qr-status" class="qr-status">Ready for Scan</p>
+                    <div class="panel-header-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="14" y="14" width="3" height="3" fill="currentColor"/>
+                            <rect x="18" y="14" width="3" height="3" fill="currentColor"/>
+                            <rect x="14" y="18" width="3" height="3" fill="currentColor"/>
+                            <rect x="18" y="18" width="3" height="3" fill="currentColor"/>
+                        </svg>
                     </div>
-                    <div class="qr-button-group">
-                        <button id="cancel-btn" class="btn-secondary">Cancel</button>
-                        <button id="submit-btn" class="btn-primary" disabled>Submit</button>
+                    <div>
+                        <h1>Scan QR Code</h1>
+                        <p>Enter the product QR code to begin wire inspection</p>
                     </div>
                 </div>
-                <!-- Blueprint Section -->
-                <div class="blueprint-container">
-                    <span class="blueprint-label">📋 Instructions</span>
 
-                    <div class="blueprint-content">
-                        <!-- Blueprint Image -->
-                        <div class="blueprint-image-wrapper">
-                            <img src="/static/img/blueprint.png" alt="Wire Assembly Instructions" class="blueprint-image" />
-
+                <div class="step1-layout">
+                    <div class="qr-entry-container">
+                        <div class="qr-input-card">
+                            <label for="qr-input">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <rect x="1" y="1" width="5" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/>
+                                    <rect x="10" y="1" width="5" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/>
+                                    <rect x="1" y="10" width="5" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/>
+                                    <rect x="10" y="10" width="2" height="2" fill="currentColor"/>
+                                    <rect x="13" y="10" width="2" height="2" fill="currentColor"/>
+                                    <rect x="10" y="13" width="2" height="2" fill="currentColor"/>
+                                </svg>
+                                Product QR Code
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="qr-input" class="qr-input" placeholder="Scan or type QR code..." autocomplete="off" autofocus>
+                                <div class="input-glow"></div>
+                            </div>
+                            <p id="qr-status" class="qr-status">
+                                <svg class="qr-status-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M7 4.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <circle cx="7" cy="9.5" r="0.75" fill="currentColor"/>
+                                </svg>
+                                <span>Ready for Scan</span>
+                            </p>
                         </div>
-
-                        <!-- Wire Sequence -->
-                        <div class="wire-sequence">
-                            <div class="wire-sequence-title">Wire Order</div>
-                            <ul class="wire-list">
-                                <li class="wire-item black">1 - BLACK</li>
-                                <li class="wire-item red">2 - RED</li>
-                                <li class="wire-item white">3 - WHITE</li>
-                                <li class="wire-item white">4 - WHITE</li>
-                                <li class="wire-item red">5 - RED</li>
-                            </ul>
+                        <div class="qr-button-group">
+                            <button id="cancel-btn" class="btn-secondary">
+                                <span>Cancel</span>
+                            </button>
+                            <button id="submit-btn" class="btn-primary" disabled>
+                                <span>Submit</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
+
+
                 </div>
-
-
             </section>
 
             <!-- Step 2: Inspection -->
@@ -90,47 +158,62 @@
                         <div class="camera-section">
                             <div class="video-card" id="display-card">
                                 <img id="display-image" src="" alt="Camera Feed">
+                                <div class="video-overlay">
+                                    <div class="scan-line"></div>
+                                </div>
+                                <div class="video-corner tl"></div>
+                                <div class="video-corner tr"></div>
+                                <div class="video-corner bl"></div>
+                                <div class="video-corner br"></div>
                             </div>
                             <div id="status-badge-container"></div>
                         </div>
 
-                        <!-- Blueprint Section (same as Step 1) -->
-                        <div class="blueprint-container">
-                            <span class="blueprint-label">📋 Instructions</span>
-                            <div class="blueprint-content">
-                                <div class="blueprint-image-wrapper">
-                                    <img src="/static/img/blueprint.png" alt="Wire Assembly Instructions"
-                                        class="blueprint-image" />
-                                </div>
-                                <div class="wire-sequence">
-                                    <div class="wire-sequence-title">Wire Order</div>
-                                    <ul class="wire-list">
-                                        <li class="wire-item black">1 - BLACK</li>
-                                        <li class="wire-item red">2 - RED</li>
-                                        <li class="wire-item white">3 - WHITE</li>
-                                        <li class="wire-item white">4 - WHITE</li>
-                                        <li class="wire-item red">5 - RED</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     <!-- Results Sidebar (corner) -->
                     <div class="results-corner">
                         <div class="details-card">
-                            <h2 class="sidebar-title">Wire Inspection</h2>
-                            <p id="step2-subtitle" class="sidebar-subtitle">Ready for Scan</p>
-                            <h3>Inspection Details</h3>
+                            <div class="details-card-header">
+                                <div>
+                                    <h2 class="sidebar-title">Wire Inspection</h2>
+                                    <p id="step2-subtitle" class="sidebar-subtitle">Ready for Scan</p>
+                                </div>
+                                <div class="inspect-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M16 16L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <h3>
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 3.5H12M2 7H12M2 10.5H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                Inspection Details
+                            </h3>
                             <div id="result-details">
                                 <div class="detail-placeholder">
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                        <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/>
+                                        <path d="M16 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        <circle cx="16" cy="21" r="1" fill="currentColor"/>
+                                    </svg>
                                     <p>Results will appear here</p>
                                 </div>
                             </div>
                             <div class="button-group">
-                                <button id="inspect-btn" class="btn-primary">Inspect</button>
-                                <button id="new-product-btn" class="btn-secondary" style="display: none;">New
-                                    Product</button>
+                                <button id="inspect-btn" class="btn-primary btn-inspect">
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                        <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M12.5 12.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                    <span>Inspect</span>
+                                </button>
+                                <button id="new-product-btn" class="btn-secondary" style="display: none;">
+                                    <span>New Product</span>
+                                </button>
                             </div>
                         </div>
                     </div>
