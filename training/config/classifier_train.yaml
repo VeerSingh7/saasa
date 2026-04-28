@@ -1,0 +1,26 @@
+# Training config for the per-wire binary classifier
+# Run: python training/train_classifier.py --config training/config/classifier_train.yaml
+
+# Dataset root — must contain subdirs: train/ok, train/fail, val/ok, val/fail
+# Use the crops/ directory from scripts/export_collected_data.py
+data_dir: null             # required — set here or pass via --data
+
+backbone: mobilenet_v3_small   # lightweight; good for ARM inference after ONNX export
+pretrained: true
+num_classes: 2
+input_size: 224
+
+epochs: 50
+batch: 32
+lr: 0.001
+weight_decay: 0.0001
+device: cpu
+
+# Augmentation
+random_flip: true
+color_jitter: 0.2
+
+# Output
+output_dir: runs/classify
+model_name: wire_classifier
+save_best: true

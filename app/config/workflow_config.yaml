@@ -1,0 +1,5 @@
+num_wires: 7
+
+# Pass/fail decision: "all" means every wire must pass
+# (maps to MIN(wire_results) in the DB — any 0 → overall FAIL)
+pass_policy: all

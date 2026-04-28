@@ -1,4 +1,23 @@
-# app/config/model_config.yaml
 active: full
 fallback: lite
 expiry: 2027-01-01
+
+# Runtime backend: onnx | pytorch
+backend: onnx
+
+# Model file paths relative to the models_dir configured in app_config.yaml
+detector:
+  model_file: wire_yolo.onnx           # ONNX export of the YOLO detector
+  model_version: "1.0.0"
+  input_size: [640, 640]               # width, height the model was exported at
+  confidence_threshold: 0.4
+  iou_threshold: 0.45
+  num_wires: 7
+  sort_by: top_to_bottom              # top_to_bottom | left_to_right
+
+classifier:
+  model_file: wire_cls.onnx            # ONNX export of the per-wire classifier
+  model_version: "1.0.0"
+  input_size: [224, 224]
+  classes: ["ok", "fail"]             # index 0 = ok, index 1 = fail
+  confidence_threshold: 0.5

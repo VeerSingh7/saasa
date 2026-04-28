@@ -196,21 +196,25 @@ def insert_detection(inspection_id, detection_index,
 
     conn.commit()
     conn.close()
-def insert_wire_ai_result(inspection_id, wire_no, ai_result):
+def insert_wire_ai_result(inspection_id, wire_no, ai_result,
+                          confidence=None, image_path=None):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         INSERT OR REPLACE INTO wire_results (
             inspection_id, wire_no,
-            ai_result, final_result
+            ai_result, final_result,
+            confidence, image_path
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
     """, (
         inspection_id,
         wire_no,
         int(ai_result),
-        int(ai_result)
+        int(ai_result),
+        confidence,
+        image_path,
     ))
 
     conn.commit()

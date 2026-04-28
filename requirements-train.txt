@@ -1,0 +1,14 @@
+# Training / development — install on a workstation or server (NOT on the edge device)
+# Includes all edge deps plus heavy ML packages
+
+-r requirements.txt
+
+ultralytics>=8.3
+torch>=2.1
+torchvision>=0.16
+pandas>=2.0
+matplotlib>=3.7
+
+# For ONNX export + optional INT8 quantization
+onnx>=1.15
+onnxsim>=0.4          # model simplification for cleaner ARM ONNX graphs

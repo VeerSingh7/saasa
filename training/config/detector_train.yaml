@@ -1,0 +1,26 @@
+# Training config for the YOLO wire detector
+# Run: python training/train_detector.py --config training/config/detector_train.yaml
+
+model: yolov8n.pt          # base weights — yolov8n.pt / yolov8s.pt / yolov8m.pt
+data: null                 # path to dataset.yaml (required — pass via --data or set here)
+
+epochs: 100
+batch: 16
+imgsz: 640
+device: cpu                # cpu | 0 | 0,1  (use "0" for CUDA GPU)
+workers: 4
+
+optimizer: AdamW
+lr0: 0.001
+weight_decay: 0.0005
+
+# Augmentation
+flipud: 0.0
+fliplr: 0.5
+mosaic: 0.5
+
+# Output
+project: runs/detect
+name: wire_detector
+save_period: 10            # save checkpoint every N epochs
+patience: 20               # early stopping patience

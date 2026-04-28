@@ -51,6 +51,18 @@ def update_manual_result(inspection_id: int, wire_no: int, manual_result: int) -
     db.update_manual_wire_result(inspection_id, wire_no, manual_result)
 
 
+def insert_wire_result(inspection_id: int, wire_no: int, ai_result: int,
+                       confidence=None, image_path=None) -> None:
+    """Insert or replace a wire AI result (thin wrapper for tests and routes)."""
+    db.insert_wire_ai_result(inspection_id, wire_no, ai_result,
+                             confidence=confidence, image_path=image_path)
+
+
+def compute_final_result(inspection_id: int):
+    """Compute final pass/fail for an inspection (None if < 7 wires present)."""
+    return db.compute_final_result(inspection_id)
+
+
 def finalize_inspection(inspection_id: int) -> bool:
     """Finalize inspection and return True for PASS else False.
 

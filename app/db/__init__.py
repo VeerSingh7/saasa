@@ -8,6 +8,7 @@ from .queries import (
     get_inspection_by_barcode,
     create_inspection,
     get_wire_results_by_inspection,
+    insert_wire_result,
     update_manual_result,
     finalize_inspection,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "get_inspection_by_barcode",
     "create_inspection",
     "get_wire_results_by_inspection",
+    "insert_wire_result",
     "update_manual_result",
     "finalize_inspection",
 ]

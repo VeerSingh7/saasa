@@ -1,94 +1,133 @@
-"""Flask application factory.
-
-Provides create_app() so other modules can import the package without
-triggering app wiring at import time.
-"""
-from flask import Flask
+"""Flask application factory."""
 from pathlib import Path
-from jinja2 import ChoiceLoader, FileSystemLoader
+
+from flask import Flask
+from jinja2 import FileSystemLoader
 
 
 def create_app(test_config=None):
-	"""Create and configure the Flask application.
+    project_root = Path(__file__).resolve().parents[1]
 
-	- Registers blueprints from `app.routes`
-	- Config can be extended via `test_config` dict
-	"""
-	# Configure template/static folders to point to top-level dirs
-	# Support templates placed either at project-level `templates/` or
-	# package-local `app/templates/`. Prefer project-level first so a
-	# top-level templates/ directory overrides package templates.
-	project_root = Path(__file__).resolve().parents[1]
-	this_dir = Path(__file__).resolve().parent
+    app = Flask(
+        __name__,
+        static_folder=str(project_root / "static"),
+    )
+    app.secret_key = app.config.get("SECRET_KEY", "dev-secret-key")
+    app.jinja_loader = FileSystemLoader(str(project_root / "templates"))
 
-	# Serve static files from project-level `static/` so root static assets
-	# are available to the app and templates.
-	app = Flask(
-		__name__,
-		static_folder=str(project_root / "static"),
-	)
+    if test_config:
+        app.config.update(test_config)
 
-	# Secret key for session usage in API endpoints; override via config
-	app.secret_key = app.config.get("SECRET_KEY", "dev-secret-key")
+    # ------------------------------------------------------------------
+    # Logging
+    # ------------------------------------------------------------------
+    from app.utils.logger import setup_logging
+    from app.utils.config_loader import load as load_cfg
+    app_cfg = load_cfg("app_config", defaults={
+        "log_level": "INFO",
+        "log_file": None,
+        "models_dir": "models",
+        "data_dir": "data",
+        "inference_backend": "onnx",
+    })
+    setup_logging(app_cfg.get("log_level", "INFO"), app_cfg.get("log_file"))
 
-	# Configure Jinja loader to use project-level templates only to avoid
-	# ambiguity between `templates/` and `app/templates/`.
-	app.jinja_loader = FileSystemLoader(str(project_root / "templates"))
+    # ------------------------------------------------------------------
+    # Database
+    # ------------------------------------------------------------------
+    try:
+        from app.db import database as _db
+        _db.init_db()
+    except Exception:
+        pass
 
-	if test_config:
-		app.config.update(test_config)
+    # ------------------------------------------------------------------
+    # Model service (lazy — loads on first /api/inspect call)
+    # ------------------------------------------------------------------
+    models_dir = project_root / app_cfg.get("models_dir", "models")
+    from app.services.model_service import ModelService
+    model_service = ModelService(
+        models_dir=models_dir,
+        backend=app_cfg.get("inference_backend", "onnx"),
+    )
+    app.extensions = getattr(app, "extensions", {})
+    app.extensions["model_service"] = model_service
 
-	# Ensure database initialized so routes can create/read rows without
-	# requiring manual init during development.
-	try:
-		from app.db import database as _db
-		_db.init_db()
-	except Exception:
-		# best-effort: don't crash app creation if DB initialization fails
-		pass
+    # ------------------------------------------------------------------
+    # Data collector (async background writer)
+    # ------------------------------------------------------------------
+    dc_cfg = load_cfg("data_collection_config", defaults={
+        "enabled": True,
+        "mode": "all",
+        "low_conf_threshold": 0.7,
+        "max_queue": 256,
+        "retention_days": 30,
+        "storage_root": "data/collected",
+    })
+    if not test_config and dc_cfg.get("enabled", True):
+        from app.data_collection.storage import FilesystemStorage
+        from app.data_collection.collector import DataCollector
+        storage_root = project_root / dc_cfg.get("storage_root", "data/collected")
+        storage = FilesystemStorage(storage_root)
+        collector = DataCollector(
+            storage=storage,
+            mode=dc_cfg.get("mode", "all"),
+            low_conf_threshold=float(dc_cfg.get("low_conf_threshold", 0.7)),
+            max_queue=int(dc_cfg.get("max_queue", 256)),
+            retention_days=int(dc_cfg.get("retention_days", 30)),
+        )
+        app.extensions["data_collector"] = collector
 
-	# Register blueprints
-	from app.routes.barcode import barcode_bp
-	from app.routes.inspection import inspection_bp
-	from app.routes.ui import ui_bp
-	from app.routes.camera import camera_bp  # camera blueprint is optional and will be registered below if enabled
-	from app.routes.api import api_bp
+        @app.teardown_appcontext
+        def _stop_collector(exception=None):
+            try:
+                collector.stop()
+            except Exception:
+                pass
 
-	app.register_blueprint(barcode_bp)
-	app.register_blueprint(inspection_bp)
-	app.register_blueprint(ui_bp)
-	app.register_blueprint(api_bp)
-	# Note: we serve static files from top-level `static/`. Keep package-local
-	# `app/static/` as a source-of-truth, but avoid serving it separately to
-	# reduce path confusion.
+    # ------------------------------------------------------------------
+    # Blueprints
+    # ------------------------------------------------------------------
+    from app.routes.barcode import barcode_bp
+    from app.routes.inspection import inspection_bp
+    from app.routes.ui import ui_bp
+    from app.routes.camera import camera_bp
+    from app.routes.api import api_bp
 
-	# Camera manager: optional. Enable via app.config['ENABLE_CAMERA']=True and
-	# provide settings under app.config['CAMERA'] (dict). Default is disabled.
-	if app.config.get("ENABLE_CAMERA", False):
-		# safe defaults for camera settings
-		camera_cfg = app.config.get("CAMERA", {})
-		project_root = Path(__file__).resolve().parents[1]
-		fallback = camera_cfg.get("fallback_image") or str(project_root / "static" / "img" / "fallback.jpg")
-		from app.camera.manager import CameraManager
-		cam = CameraManager(
-			source=camera_cfg.get("source", 0),
-			width=camera_cfg.get("width", 640),
-			height=camera_cfg.get("height", 480),
-			fallback_image=fallback,
-			reopen_interval=camera_cfg.get("reopen_interval", 5.0),
-		)
-		app.extensions = getattr(app, "extensions", {})
-		app.extensions["camera_manager"] = cam
-		app.register_blueprint(camera_bp)
+    app.register_blueprint(barcode_bp)
+    app.register_blueprint(inspection_bp)
+    app.register_blueprint(ui_bp)
+    app.register_blueprint(api_bp)
 
-		# Ensure the camera is stopped on app shutdown
-		@app.teardown_appcontext
-		def _stop_camera(exception=None):
-			try:
-				cam.stop()
-			except Exception:
-				pass
+    # ------------------------------------------------------------------
+    # Camera (optional)
+    # ------------------------------------------------------------------
+    cam_cfg = app_cfg.get("camera", {})
+    enable_camera = (
+        app.config.get("ENABLE_CAMERA", False)
+        or (isinstance(cam_cfg, dict) and cam_cfg.get("enabled", False))
+    )
+    if enable_camera:
+        camera_cfg = {**cam_cfg, **(app.config.get("CAMERA") or {})}
+        fallback = camera_cfg.get("fallback_image") or str(
+            project_root / "static" / "img" / "fallback.jpg"
+        )
+        from app.camera.manager import CameraManager
+        cam = CameraManager(
+            source=camera_cfg.get("source", 0),
+            width=camera_cfg.get("width", 640),
+            height=camera_cfg.get("height", 480),
+            fallback_image=fallback,
+            reopen_interval=float(camera_cfg.get("reopen_interval", 5.0)),
+        )
+        app.extensions["camera_manager"] = cam
+        app.register_blueprint(camera_bp)
 
-	# end if ENABLE_CAMERA
+        @app.teardown_appcontext
+        def _stop_camera(exception=None):
+            try:
+                cam.stop()
+            except Exception:
+                pass
 
-	return app
+    return app

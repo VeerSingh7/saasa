@@ -1,0 +1,20 @@
+enabled: true
+
+# Collection policy:
+#   all              – collect every inspection (default)
+#   low_confidence   – collect only when any wire confidence < low_conf_threshold
+#   manual_override  – collect only inspections where a human overrode the AI
+mode: all
+low_conf_threshold: 0.7
+
+# Local storage
+storage_root: data/collected
+
+# Background queue depth. Samples beyond this limit are dropped (never blocks the request).
+max_queue: 256
+
+# Delete sample folders older than this many days on collector startup (0 = never)
+retention_days: 30
+
+# Storage backend: filesystem | (cloud backends plug in here later)
+storage_backend: filesystem

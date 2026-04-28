@@ -1,0 +1,19 @@
+log_level: INFO
+log_file: data/logs/saasa.log
+
+# Paths (relative to project root)
+models_dir: models
+data_dir: data
+
+# Camera — mirrors CameraManager init kwargs
+camera:
+  enabled: false   # set to true when a real camera is connected
+  source: 0
+  width: 640
+  height: 480
+  reopen_interval: 5.0
+  fallback_image: static/img/fallback.jpg
+
+# Runtime backend for inference: onnx | pytorch
+# Use "onnx" on Raspberry Pi; "pytorch" on a dev box with torch installed
+inference_backend: onnx

@@ -1,11 +1,22 @@
-models
+models/
 # Python
 __pycache__/
 *.pyc
+*.pyo
 
 # Local runtime data
 data/
 *.db
 
+# Training runs
+runs/
+
+# Jupyter
+.ipynb_checkpoints/
+
 # OS junk
 .DS_Store
+
+# Private planning
+docs/
+tasks/
